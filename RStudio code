@@ -1,0 +1,171 @@
+---------------RStudio code-----------------
+
+#setup the directory to import our files
+getwd()
+setwd("-----") # Add your files location path and run.
+
+#load the required libraries
+install.packages("tidyverse")
+library(lubridate)
+library(data.table)
+library(ggplot2)
+
+#Load the files and name them
+da <- read.csv("../input/bellabeat/dailyActivity_merged.csv")
+dc <- read.csv("../input/bellabeat/dailyCalories_merged.csv")
+di <- read.csv("../input/bellabeat/dailyIntensities_merged.csv")
+ds <- read.csv("../input/bellabeat/dailySteps_merged.csv")
+hc <- read.csv("../input/bellabeat/hourlyCalories_merged.csv")
+hi <- read.csv("../input/bellabeat/hourlyIntensities_merged.csv")
+hs <- read.csv("../input/bellabeat/hourlySteps_merged.csv")
+ha <- read.csv("../input/bellabeat/hourlyactivity.csv")
+heart <- read.csv("../input/bellabeat/heartrate_seconds_merged.csv")
+weight <- read.csv("../input/bellabeat/weightLogInfo_merged.csv")
+sleep <- read.csv("../input/bellabeat/sleepDay_merged.csv")
+
+#get the column names from each dataset
+colnames(da)
+colnames(ha)
+colnames(dc)
+colnames(di)
+colnames(ds)
+colnames(hc)
+colnames(hi)
+colnames(hs)
+colnames(sleep)
+colnames(weight)
+colnames(heart)
+
+#display only top 6 rows of datasets using head() function
+head(da)
+head(ha)
+head(dc)
+head(di)
+head(ds)
+head(sleep)
+head(weight)
+head(heart)
+
+#using glimpse() function
+glimpse(da)
+glimpse(sleep)
+glimpse(weight)
+
+#get the distinct ids
+n_distinct(da$Id)
+n_distinct(sleep)
+n_distinct(weight)
+
+#Used the nrow() function to get the number of rows in the datasets.
+nrow(da)
+nrow(sleep)
+nrow(weight)
+
+#loaded sqldf library
+install.packages("sqldf")
+library(sqldf)
+
+#make sure that the values present in dailty activity are the same values present in daily calories, daily intensities and daily steps datasets.
+da_sql1 <- da %>% 
+  select(Id, ActivityDate, Calories)
+sql1 <- sqldf('SELECT * FROM da_sql1 INTERSECT SELECT * FROM dc')
+head(sql1)
+
+da_sql2 <- da %>% 
+  select(Id, ActivityDate, SedentaryMinutes, LightlyActiveMinutes, FairlyActiveMinutes, VeryActiveMinutes, SedentaryActiveDistance, LightActiveDistance, ModeratelyActiveDistance, VeryActiveDistance)
+sql2 <- sqldf('SELECT * FROM da_sql2 INTERSECT SELECT * FROM di')
+head(sql2)
+
+da_sql3 <- da %>% 
+  select(Id, ActivityDate, TotalSteps)
+sql3 <- sqldf('SELECT * FROM da_sql3 INTERSECT SELECT * FROM ds')
+head(sql3)
+
+#Analyzing 
+
+da_summary <- da %>% 
+  select(TotalSteps,
+         TotalDistance,
+         Calories,
+         VeryActiveDistance,
+         SedentaryActiveDistance,
+         VeryActiveMinutes,
+         SedentaryMinutes) %>% 
+  summary()
+da_summary
+
+sleep_summary <- sleep %>% 
+  select(TotalMinutesAsleep,
+         TotalTimeInBed) %>% 
+  summary()
+sleep_summary
+
+weight_summary <- weight %>% 
+  select(WeightKg,
+         BMI) %>% 
+  summary()
+weight_summary
+
+#summmary of heart log information
+heart_log <- weight %>% 
+  select(WeightKg, BMI) %>% 
+  summary()
+heart_log
+
+#visualizing using the data from daily activity, daily sleep data
+
+ggplot(data = da, aes(x=TotalSteps, y=LightlyActiveMinutes, color = Calories)) + geom_point()
+
+ggplot(data = da, aes(x=TotalSteps, y=VeryActiveMinutes, color = Calories)) + geom_point()
+
+ggplot(data = sleep, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + geom_point()
+
+#export the output graphs to save for documentation.
+#fwrite() function do export the dataset to local.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
